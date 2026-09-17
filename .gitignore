@@ -1,0 +1,19 @@
+# What building, testing and releasing this project leaves in a checkout.
+# Anything particular to one machine, editor or developer belongs in a personal
+# excludes file, not here.
+
+# Build and release output
+/devmodels
+/devmodels.exe
+/dist/
+*.test
+
+# A catalog database, for a run pointed at the checkout rather than at the
+# per-user data directory this program normally uses.
+*.db
+*.db-wal
+*.db-shm
+
+# Credentials. Nothing here reads one, and nothing should arrive by accident.
+.env
+.env.*

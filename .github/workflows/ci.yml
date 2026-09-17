@@ -1,0 +1,61 @@
+# Deterministic validation for every push and pull request. Nothing here
+# contacts the live data sources or downloads the browser runtime: the live and
+# browser test suites are only compiled and vetted.
+#
+# Actions are pinned to full commit SHAs, because a tag can be moved to point at
+# different code. The trailing comment records which release each SHA is.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate (Linux)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Nothing here pushes, so the job has no use for a stored credential.
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      # The validation script's own failure handling.
+      - name: Test scripts/validate.sh
+        run: scripts/validate_test.sh
+      # The release build and packaging logic, with the go command stubbed.
+      - name: Test scripts/release.sh
+        run: scripts/release_test.sh
+      # The workflows' own structure: privilege split, artifact handoff, pins.
+      - name: Test the workflow structure
+        run: scripts/workflow_test.sh
+      # gofmt, go mod verify, tidy drift, vet, tests, race tests, cross-compiles
+      # for every supported target, and vet of the live and browser build tags.
+      - name: Validate
+        run: scripts/validate.sh
+
+  test:
+    name: Test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Vet
+        run: go vet ./...
+      - name: Test
+        run: go test -count=1 ./...

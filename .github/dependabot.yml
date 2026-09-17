@@ -1,0 +1,17 @@
+# Dependency update proposals. Both ecosystems matter here for the same reason:
+# the workflow pins actions to commit SHAs, which are immutable and therefore do
+# not pick up fixes on their own, and the Go module graph carries the SQLite
+# driver and the browser client.
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5

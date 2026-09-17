@@ -1,0 +1,4 @@
+# Keep LF line endings in every checkout. A CRLF shell script fails under bash,
+# and gofmt reports CRLF Go files as unformatted, so Windows clones with
+# core.autocrlf enabled would otherwise break scripts/validate.sh.
+* text=auto eol=lf

@@ -117,7 +117,11 @@ make install                          # installs into $GOBIN or $(go env GOPATH)
 go build -o devmodels ./cmd/devmodels # or build a binary in place
 ```
 
-`make install` needs a POSIX shell; on Windows, use `go install` or `go build`.
+`make install` needs GNU make, which is what the `Makefile` is written for, and
+works from a Windows shell as well as a POSIX one. Without make,
+`go install ./cmd/devmodels` does the same thing without the version stamp. The
+Makefile's release targets call the scripts in `scripts/`, so those do need a
+POSIX shell.
 
 The binary is pure Go (no cgo) and needs nothing else at runtime. It has been
 run natively on macOS arm64 and Windows arm64; the other four targets are

@@ -5,13 +5,20 @@ Requires Go 1.26.6 or later. No cgo, Node or other toolchain.
 ## Build
 
 ```sh
-make install             # go install with the git-derived version into $GOBIN or $(go env GOPATH)/bin (POSIX shell)
+make install             # go install with the git-derived version into $GOBIN or $(go env GOPATH)/bin
 make install VERSION=v0.1.0
 go build -o devmodels ./cmd/devmodels
 go build -ldflags "-X github.com/Tim-Butterfield/devin-model-catalog/internal/buildinfo.Version=v0.1.0" -o devmodels ./cmd/devmodels
 ```
 
 Cross-compile any supported target with `CGO_ENABLED=0 GOOS=… GOARCH=…`.
+
+`install` is written to run under whatever shell make picked, including
+`cmd.exe`: its recipe is two commands with no shell syntax, and the version and
+install directory are resolved by make rather than by the shell. The `release`
+and `release-check` targets call the scripts in `scripts/` and so need a POSIX
+shell; on Windows that means Git Bash or WSL. The `Makefile` is GNU make syntax
+throughout — `nmake` and the other Windows makes cannot read it.
 
 ## Test
 

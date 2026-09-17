@@ -6,6 +6,23 @@ for the supported targets and a `SHA256SUMS` file; see
 
 Release history begins with v0.1.0.
 
+## v0.1.1
+
+Two fixes. Nothing about the catalog, the query semantics, the JSON
+projections or the MCP tools changed.
+
+- **`make install` works under a Windows shell.** Its recipe ended in a line of
+  POSIX shell, which `cmd.exe` read as a call to its own `dir` builtin, so the
+  target failed with `Parameter format not correct` even though `go install`
+  had already succeeded. make now resolves the version and the install
+  directory itself, leaving two commands any shell can run. This needs GNU
+  make: the `Makefile` is GNU syntax throughout, and the `release` targets call
+  the scripts in `scripts/` and so still need a POSIX shell.
+- **`devmodels config` says when the config file does not exist yet.** It is
+  written only when a value is set, so it is routinely absent; the line now
+  reports that instead of leaving a reader to go looking for a file that was
+  never created.
+
 ## v0.1.0
 
 First public release.

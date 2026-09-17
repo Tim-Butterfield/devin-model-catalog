@@ -1492,7 +1492,16 @@ func (c *command) config(args []string) error {
 		}
 		// Every value here is a path. Each gets a labelled line of its own and
 		// wraps rather than being truncated, because a partial path is useless.
+		//
+		// The config file is the one path here that is routinely absent: it is
+		// written only when someone sets a value, and everything reads a missing
+		// one as "no overrides". Printing the path alone invites the reader to
+		// conclude the file is there, so when it is not, the line says so. A
+		// file that exists needs no remark.
 		c.wrapped("Config file:     ", "    ", cfg.ConfigFile)
+		if _, err := os.Stat(cfg.ConfigFile); errors.Is(err, os.ErrNotExist) {
+			c.printf("    (none yet; written by `devmodels config set db-path`)\n")
+		}
 		c.wrapped("Database:        ", "    ", cfg.DBPath)
 		c.printf("    (%s)\n", cfg.DBPathSource)
 		c.wrapped("Data dir:        ", "    ", cfg.Paths.DataDir)
